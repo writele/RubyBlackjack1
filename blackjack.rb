@@ -21,19 +21,18 @@ player_hand = []
 dealer_score = 0
 player_score = 0
 
-def check_if_ace(hand, score, deck)
+def check_ace(hand, score, deck)
   aces = deck.select {|k, v| /^Ace/.match(k)}.keys
   if !(hand & aces).empty? && score < 12
   score = score + 10
+  end
 end
 
-
-# Deal two cards to player and dealer
 def deal_new_card(hand, score, deck)
-  new_card = deck_of_cards.select{|k, v| v[1] == false}.keys.sample
-  deck_of_cards[new_card][1] == true
-  hand.push = new_card
-  score = score + deck_of_cards[new_card][0]
+  new_card = deck.select{|k, v| v[1] == false}.keys.sample
+  deck[new_card][1] = true
+  hand.push(new_card)
+  score = score + deck[new_card][0]
 end
 
 def show_hands(player_hand, dealer_hand)
@@ -41,30 +40,81 @@ def show_hands(player_hand, dealer_hand)
   puts "Dealer's hand is #{dealer_hand}"
 end
 
-def check_blackjack(hand, deck)
-  aces = deck.select {|k, v| /^Ace/.match(k)}.keys
-  suites = deck.select {|k, v| /^King|Queen|Jack/.match(k)}.keys
+def check_blackjack(player, hand, deck)
+  aces = deck.select {|k, _| /^Ace/.match(k)}.keys
+  suites = deck.select {|k, _| /^King|Queen|Jack/.match(k)}.keys
   if hand.length == 2 && !(hand & aces).empty? && !(hand & suites).empty?
+    end_game("Player")
     return true
   end
 end
 
-def winner
-  puts "#{player} wins!"
-  break
+def check_score(player, score)
+  if score > 21
+    winner = "#{player} busts"
+  elsif score == 21
+    winner = player
+  end
 end
 
-new_deck = deck_of_cards
-begin
-  deal_new_card(player_hand, player_score, new_deck)
-  deal_new_card(player_hand, player_score, new_deck)
-  deal_new_card(dealer_hand, dealer_score, new_deck)
-  deal_new_card(dealer_hand, dealer_score, new_deck)
-  show_hands
-  if check_blackjack(player_hand, new_deck) || 
-    winner
+def dealer_turn
+  begin
+    deal_new_card(dealer_hand, dealer_score, new_deck)
+    show_hands(player_hand, dealer_hand)
+    if check_score("Dealer", dealer_score)
+      end_game(winner)
+    end
+  end until dealer_score > 17
+  if dealer_score > player_score
+    end_game("Dealer")
+  elsif dealer_score < player_score
+    end_game("Player")
+  end
+end
+
+def end_game(winner)
+  if winner == "Player" || winner == "Dealer"
+    puts "#{winner} wins!"
+  elsif winner == "Player busts" || winner == "Dealer busts"
+    puts "#{winner}!"
+  end
+  puts "Game over. Play again? Y/N"
+  play_again = gets.chomp
+  if play_again.upcase == "Y"
+    end_game == false
   else
-  puts "Hit or Stay?"
+    end_game == true   
+  end
+end
+
+
+begin
+  new_deck = deck_of_cards
+  deal_new_card(player_hand, player_score, new_deck)
+  deal_new_card(player_hand, player_score, new_deck)
+  deal_new_card(dealer_hand, dealer_score, new_deck)
+  deal_new_card(dealer_hand, dealer_score, new_deck)
+  show_hands(player_hand, dealer_hand)
+  if check_score("Player", player_score)
+    end_game(winner)
+  elsif check_score("Dealer", dealer_score)
+    end_game(winner)
+  else
+    begin
+      puts "Hit or Stay? Enter 'h' or 's'."
+      player_choice = gets.chomp
+      if player_choice.downcase == "h"
+        deal_new_card(player_hand, player_score, new_deck)
+        show_hands(player_hand, dealer_hand)
+          if check_score("Player", player_score)
+            end_game(winner)
+          end
+      elsif player_choice.downcase == "s"
+        dealer_turn
+      end
+    end until dealer_turn || end_game(winner)
+  end
+end until end_game(winner) == true
 
 
 # Player chooses to hit or stay
@@ -80,4 +130,3 @@ begin
 #   over 21? dealer loses
 #   else player turn
 # show hands
-end
