@@ -21,12 +21,6 @@ def calculate_total(hand)
     end
   end
 
-def display_hand(hand)
-  hand.each do |card|
-    print "#{card[1]} of #{card[0]}, "
-  end
-end
-
   arr.select{|e| e == "Ace"}.count.times do
     if total > 21
       total -= 10
@@ -34,6 +28,12 @@ end
   end
 
   total
+end
+
+def display_hand(hand)
+  hand.each do |card|
+    print "#{card[1]} of #{card[0]}, "
+  end
 end
 
 suits = ["Hearts", "Spades", "Diamonds", "Clubs"]
