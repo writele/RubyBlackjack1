@@ -4,7 +4,7 @@ player_money = 100
 
 play_again = 'y'
 begin
-puts "How much you wanna bet on this round? You currently have $#{player_money.to_s}"
+puts "How much you wanna bet on this round? You currently have $#{player_money}"
 player_bet = gets.chomp.to_i
 
 def calculate_total(hand)
@@ -20,6 +20,12 @@ def calculate_total(hand)
       total += value.to_i
     end
   end
+
+def display_hand(hand)
+  hand.each do |card|
+    print "#{card[1]} of #{card[0]}, "
+  end
+end
 
   arr.select{|e| e == "Ace"}.count.times do
     if total > 21
@@ -47,8 +53,12 @@ dealer_hand << deck.pop
 dealer_total = calculate_total(dealer_hand)
 player_total = calculate_total(player_hand)
 
-puts "Dealer has #{dealer_hand}, for a total of #{dealer_total}"
-puts "You have #{player_hand}, for a total of #{player_total}"
+puts "Dealer has:" 
+display_hand(dealer_hand) 
+puts "for a total of #{dealer_total}"
+puts "#{player_name} has:"
+display_hand(player_hand) 
+puts "for a total of #{player_total}"
 puts ""
 begin
   if dealer_total >= 21 || player_total >= 21
@@ -60,16 +70,24 @@ begin
       player_hand << deck.pop
       dealer_total = calculate_total(dealer_hand)
       player_total = calculate_total(player_hand)
-      puts "Dealer has #{dealer_hand}, for a total of #{dealer_total}"
-      puts "#{player_name} has #{player_hand}, for a total of #{player_total}"
+      puts "Dealer has:" 
+      display_hand(dealer_hand) 
+      puts "for a total of #{dealer_total}"
+      puts "#{player_name} has:"
+      display_hand(player_hand) 
+      puts "for a total of #{player_total}"
       puts ""
     elsif hit_or_stay.downcase == 's'
       begin
         dealer_hand << deck.pop
         dealer_total = calculate_total(dealer_hand)
         player_total = calculate_total(player_hand)
-        puts "Dealer has #{dealer_hand}, for a total of #{dealer_total}"
-        puts "#{player_name} has #{player_hand}, for a total of #{player_total}"
+        puts "Dealer has:" 
+        display_hand(dealer_hand) 
+        puts "for a total of #{dealer_total}"
+        puts "#{player_name} has:"
+        display_hand(player_hand) 
+        puts "for a total of #{player_total}"
         puts ""
       end until dealer_total > 17
       break
