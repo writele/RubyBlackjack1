@@ -1,5 +1,11 @@
+puts "Welcome to Blackjack! What's your name?"
+player_name = gets.chomp
+player_money = 100
+
 play_again = 'y'
 begin
+puts "How much you wanna bet on this round? You currently have $#{player_money.to_s}"
+player_bet = gets.chomp.to_i
 
 def calculate_total(hand)
   arr = hand.map{|e| e[1]}
@@ -30,7 +36,6 @@ deck = suits.product(cards)
 
 deck.shuffle!
 
-
 dealer_hand = []
 player_hand = []
 
@@ -42,8 +47,8 @@ dealer_hand << deck.pop
 dealer_total = calculate_total(dealer_hand)
 player_total = calculate_total(player_hand)
 
-puts "Dealer has #{dealer_hand[0]} and #{dealer_hand[1]}, for a total of #{dealer_total}"
-puts "You have #{player_hand[0]} and #{player_hand[1]}, for a total of #{player_total}"
+puts "Dealer has #{dealer_hand}, for a total of #{dealer_total}"
+puts "You have #{player_hand}, for a total of #{player_total}"
 puts ""
 begin
   if dealer_total >= 21 || player_total >= 21
@@ -56,7 +61,7 @@ begin
       dealer_total = calculate_total(dealer_hand)
       player_total = calculate_total(player_hand)
       puts "Dealer has #{dealer_hand}, for a total of #{dealer_total}"
-      puts "Player has #{player_hand}, for a total of #{player_total}"
+      puts "#{player_name} has #{player_hand}, for a total of #{player_total}"
       puts ""
     elsif hit_or_stay.downcase == 's'
       begin
@@ -64,7 +69,7 @@ begin
         dealer_total = calculate_total(dealer_hand)
         player_total = calculate_total(player_hand)
         puts "Dealer has #{dealer_hand}, for a total of #{dealer_total}"
-        puts "Player has #{player_hand}, for a total of #{player_total}"
+        puts "#{player_name} has #{player_hand}, for a total of #{player_total}"
         puts ""
       end until dealer_total > 17
       break
@@ -73,34 +78,35 @@ begin
 end until dealer_total >= 21 || player_total >= 21
 
 if player_total == 21 && dealer_total == 21
-  puts "Player and dealer are tied!"
+  puts "#{player_name} and dealer are tied!"
 elsif player_total > 21
-  puts "Player busts! Dealer wins!"
+  puts "#{player_name} busts! Dealer wins!"
+  player_money -= player_bet
 elsif player_total == 21
-  puts "Player has 21! Player wins!"
+  puts "#{player_name} has 21! #{player_name} wins!"
+  player_money += player_bet
 elsif dealer_total == 21
   puts "Dealer has 21! Dealer wins!" 
+  player_money -= player_bet
 elsif dealer_total > 21
-  puts "Dealer busts! Player wins!"
+  puts "Dealer busts! #{player_name} wins!"
+  player_money += player_bet
 elsif player_total > dealer_total
-  puts "Player has higher total than dealer. Player wins!"
+  puts "#{player_name} has higher total than dealer. #{player_name} wins!"
+  player_money += player_bet
 elsif player_total < dealer_total
-  puts "Dealer has higher total than player. Dealer wins!"
+  puts "Dealer has higher total than #{player_name}. Dealer wins!"
+  player_money -= player_bet
 elsif player_total == dealer_total
   puts "It's a tie!"  
 end
 
-puts "Game over. Play again? Enter 'y' or 'n'."
-play_again = gets.chomp
+if player_money <= 0 
+  puts "You're outta money! Sorry, you can't play here anymore."
+  play_again = 'n'
+else
+  puts "You currently have $#{player_money}. Play again? Enter 'y' or 'n'."
+  play_again = gets.chomp
+end
 
 end until play_again.downcase != 'y'
-
-
-
-
-
-
-
-
-
-
